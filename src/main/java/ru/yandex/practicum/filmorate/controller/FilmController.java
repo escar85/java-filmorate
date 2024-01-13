@@ -25,7 +25,7 @@ public class FilmController {
     }
 
     @PostMapping
-    public void createFilm(@RequestBody Film film) {
+    public Film createFilm(@RequestBody Film film) {
         if (!isFilmValid(film)) {
             log.warn("Ошибка валидации фильма {}", film);
             throw new ValidationException("Ошибка валидации фильма.");
@@ -35,10 +35,11 @@ public class FilmController {
         film.setId(idCount);
         films.put(film.getId(), film);
         log.info("Создан новый фильм {}", film);
+        return film;
     }
 
     @PutMapping
-    public void updateFilm(@RequestBody Film film) {
+    public Film updateFilm(@RequestBody Film film) {
         if (!isFilmValid(film)) {
             log.warn("Ошибка валидации фильма {}", film);
             throw new ValidationException("Ошибка валидации фильма.");
@@ -50,6 +51,7 @@ public class FilmController {
 
         films.put(film.getId(), film);
         log.info("Обновлен фильм {}", film);
+        return film;
     }
 
     protected boolean isFilmValid(Film film) {

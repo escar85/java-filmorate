@@ -25,7 +25,7 @@ public class UserController {
     }
 
     @PostMapping
-    public void createUser(@RequestBody User user) {
+    public User createUser(@RequestBody User user) {
         if (!isUserValid(user)) {
             log.warn("Ошибка валидации пользователя {}", user);
             throw new ValidationException("Ошибка валидации пользователя.");
@@ -33,12 +33,16 @@ public class UserController {
 
         idCount++;
         user.setId(idCount);
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
         users.put(user.getId(), user);
         log.info("Создан новый пользователь {}", user);
+        return user;
     }
 
     @PutMapping
-    public void updateUser(@RequestBody User user) {
+    public User updateUser(@RequestBody User user) {
         if (!isUserValid(user)) {
             log.warn("Ошибка валидации пользователя {}", user);
             throw new ValidationException("Ошибка валидации пользователя.");
@@ -50,6 +54,7 @@ public class UserController {
 
         users.put(user.getId(), user);
         log.info("Обновлен пользователь {}", user);
+        return user;
     }
 
     protected boolean isUserValid(User user) {
