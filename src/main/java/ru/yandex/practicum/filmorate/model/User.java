@@ -3,21 +3,23 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import javax.validation.constraints.Min;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 /**
- * Film
+ * User
  */
 @Data
 @AllArgsConstructor
-public class Film {
+public class User {
     private int id;
-    @NotNull
     private String name;
-    private String description;
-    private LocalDate releaseDate;
-    @Min(1)
-    private int duration;
+    @Email
+    private String email;
+    @NotNull
+    @NotBlank
+    private String login;
+    private LocalDate birthday;
 }
