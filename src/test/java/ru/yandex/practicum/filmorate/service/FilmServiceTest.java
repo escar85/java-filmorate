@@ -1,9 +1,9 @@
 package ru.yandex.practicum.filmorate.service;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.film.FilmService;
+import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -12,8 +12,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FilmServiceTest {
-    @Autowired
-    FilmService service;
+
+    private final FilmService service = new FilmService(new InMemoryFilmStorage());
 
     @Test
     void check_valid_object_validation() {

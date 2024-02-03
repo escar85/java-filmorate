@@ -1,9 +1,9 @@
 package ru.yandex.practicum.filmorate.service;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.user.UserService;
+import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -13,9 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class UserServiceTest {
 
-    @Autowired
-    private UserService service;
-
+    private final UserService service = new UserService(new InMemoryUserStorage());
 
     @Test
     void check_valid_object_validation() {
