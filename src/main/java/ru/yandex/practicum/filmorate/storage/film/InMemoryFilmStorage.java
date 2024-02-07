@@ -40,24 +40,29 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film addLike(int filmId, int userId) {
         Film film = films.get(filmId);
-        film.addLike(userId);
+        Set<Integer> likes = getLikesHelper(film);
+        likes.add(userId);
+        film.setLikes(likes);
         return film;
     }
 
     @Override
     public Film deleteLike(int filmId, int userId) {
         Film film = films.get(filmId);
-        if (!film.getLikes().contains(userId)) {
+        Set<Integer> likes = getLikesHelper(film);
+        if (!likes.contains(userId)) {
             throw new NotFoundException(String.format("Лайк пользователя с id %s не найден", userId));
+        } else {
+            likes.remove(userId);
+            film.setLikes(likes);
         }
-        film.deleteLike(userId);
         return film;
     }
 
     @Override
     public List<Film> getMostPopular(int count) {
         List<Film> filmsList = new ArrayList<>(films.values());
-        filmsList.sort(Comparator.comparingInt(film -> film.getLikes().size() * -1));
+        filmsList.sort(Comparator.comparingInt(film -> getLikesHelper((Film) film).size()).reversed());
         if (filmsList.size() <= count) return filmsList;
         return filmsList.subList(0, count);
     }
@@ -68,5 +73,11 @@ public class InMemoryFilmStorage implements FilmStorage {
             throw new NotFoundException(String.format("Фильм с id %s не найден", filmId));
         }
         return films.get(filmId);
+    }
+
+    private Set<Integer> getLikesHelper(Film film) {
+        Set<Integer> likes = film.getLikes();
+        if (likes == null) return new HashSet<>();
+        return likes;
     }
 }

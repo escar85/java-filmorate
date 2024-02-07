@@ -40,22 +40,22 @@ public class InMemoryUserStorage implements UserStorage {
             throw new NotFoundException(String.format("Пользователь с id %s не найден", userId));
         }
         User user = users.get(userId);
-        user.addFriend(friendId);
-        users.get(friendId).addFriend(userId);
+        addFriendHelper(user, friendId);
+        addFriendHelper(users.get(friendId), userId);
         return user;
     }
 
     @Override
     public User deleteFriend(int userId, int friendId) {
         User user = users.get(userId);
-        user.deleteFriend(friendId);
-        users.get(friendId).deleteFriend(userId);
+        deleteFriendHelper(user, friendId);
+        deleteFriendHelper(users.get(friendId), userId);
         return user;
     }
 
     @Override
     public List<User> getUserFriends(int userId) {
-        Set<Integer> ids = users.get(userId).getFriends();
+        Set<Integer> ids = getFriendsHelper(users.get(userId));
         List<User> friends = new ArrayList<>();
         for (int id : ids) {
             friends.add(users.get(id));
@@ -65,8 +65,8 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public List<User> getUserCommonFriends(int userId, int otherId) {
-        Set<Integer> userIds = users.get(userId).getFriends();
-        Set<Integer> otherUserIds = users.get(otherId).getFriends();
+        Set<Integer> userIds = getFriendsHelper(users.get(userId));
+        Set<Integer> otherUserIds = getFriendsHelper(users.get(otherId));
 
         List<User> commonFriends = new ArrayList<>();
         for (int id : userIds) {
@@ -85,4 +85,23 @@ public class InMemoryUserStorage implements UserStorage {
         }
         return users.get(userId);
     }
+
+    private void addFriendHelper(User user, int friendId) {
+        Set<Integer> friends = getFriendsHelper(user);
+            friends.add(friendId);
+            user.setFriends(friends);
+    }
+
+    private void deleteFriendHelper(User user, int friendId) {
+        Set<Integer> friends = getFriendsHelper(user);
+            friends.remove(friendId);
+            user.setFriends(friends);
+    }
+
+    private Set<Integer> getFriendsHelper(User user) {
+        Set<Integer> friends = user.getFriends();
+        if (friends == null) return new HashSet<>();
+        return friends;
+    }
+
 }

@@ -13,7 +13,7 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class FilmService {
+public class FilmService implements FilmInterface {
     private final FilmStorage filmStorage;
 
     @Autowired
