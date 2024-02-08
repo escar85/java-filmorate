@@ -1,15 +1,19 @@
-package ru.yandex.practicum.filmorate.controller;
+package ru.yandex.practicum.filmorate.service;
 
 import org.junit.jupiter.api.Test;
-
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.film.FilmService;
+import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class FilmControllerTest {
-    FilmController controller = new FilmController();
+public class FilmServiceTest {
+
+    private final FilmService service = new FilmService(new InMemoryFilmStorage());
 
     @Test
     void check_valid_object_validation() {
@@ -18,9 +22,10 @@ public class FilmControllerTest {
                 "film",
                 "description",
                 LocalDate.of(1980, 2, 2),
-                100
+                100,
+                new HashSet<>()
         );
-        boolean isValid = controller.isFilmValid(film);
+        boolean isValid = service.isFilmValid(film);
         assertTrue(isValid, "Валидный объект не прошел валидацию");
     }
 
@@ -31,9 +36,10 @@ public class FilmControllerTest {
                 "",
                 "description",
                 LocalDate.of(1980, 2, 2),
-                100
+                100,
+                new HashSet<>()
         );
-        boolean isValid = controller.isFilmValid(film);
+        boolean isValid = service.isFilmValid(film);
         assertFalse(isValid, "Неверный результат валидации");
     }
 
@@ -44,17 +50,19 @@ public class FilmControllerTest {
                 "film",
                 "description",
                 LocalDate.of(1980, 2, 2),
-                0
+                0,
+                new HashSet<>()
         );
         Film film1 = new Film(
                 1,
                 "film",
                 "description",
                 LocalDate.of(1980, 2, 2),
-                0
+                0,
+                new HashSet<>()
         );
-        boolean isValid = controller.isFilmValid(film);
-        boolean isValid1 = controller.isFilmValid(film1);
+        boolean isValid = service.isFilmValid(film);
+        boolean isValid1 = service.isFilmValid(film1);
         assertFalse(isValid, "Неверный результат валидации");
         assertFalse(isValid1, "Неверный результат валидации");
     }
@@ -66,16 +74,18 @@ public class FilmControllerTest {
                 "film",
                 "description",
                 LocalDate.of(1895, 12, 28),
-                100
+                100,
+                new HashSet<>()
         );
         Film invalidFilm = new Film(
                 1, "film",
                 "description",
                 LocalDate.of(1895, 12, 27),
-                100
+                100,
+                new HashSet<>()
         );
-        boolean validResult = controller.isFilmValid(validFilm);
-        boolean invalidResult = controller.isFilmValid(invalidFilm);
+        boolean validResult = service.isFilmValid(validFilm);
+        boolean invalidResult = service.isFilmValid(invalidFilm);
 
         assertTrue(validResult, "Неверный результат валидации");
         assertFalse(invalidResult, "Неверный результат валидации");
@@ -90,7 +100,8 @@ public class FilmControllerTest {
                         "tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, " +
                         "quis nostrud exerci tatio",
                 LocalDate.of(1980, 2, 2),
-                100
+                100,
+                new HashSet<>()
         );
         Film invalidFilm = new Film(
                 1,
@@ -99,10 +110,11 @@ public class FilmControllerTest {
                         "tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, " +
                         "quis nostrud exerci tatio1",
                 LocalDate.of(1980, 2, 2),
-                100
+                100,
+                new HashSet<>()
         );
-        boolean validResult = controller.isFilmValid(validFilm);
-        boolean invalidResult = controller.isFilmValid(invalidFilm);
+        boolean validResult = service.isFilmValid(validFilm);
+        boolean invalidResult = service.isFilmValid(invalidFilm);
 
         assertTrue(validResult, "Неверный результат валидации");
         assertFalse(invalidResult, "Неверный результат валидации");

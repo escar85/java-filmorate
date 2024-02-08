@@ -1,68 +1,64 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.utils.exceptions.ValidationException;
+import ru.yandex.practicum.filmorate.service.user.UserService;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
 @Slf4j
 public class UserController {
 
-    private final Map<Integer, User> users = new HashMap<>();
-    private int idCount = 0;
+    private final UserService userService;
+
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
-        return ResponseEntity.ok(new ArrayList<>(users.values()));
+        return ResponseEntity.ok(userService.getAllUsers());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUserById(@PathVariable int id) {
+        return ResponseEntity.ok(userService.getById(id));
     }
 
     @PostMapping
     public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
-        if (!isUserValid(user)) {
-            log.warn("Ошибка валидации пользователя {}", user);
-            throw new ValidationException("Ошибка валидации пользователя.");
-        }
-
-        idCount++;
-        user.setId(idCount);
-        if (StringUtils.isBlank(user.getName())) {
-            user.setName(user.getLogin());
-        }
-        users.put(user.getId(), user);
-        log.info("Создан новый пользователь {}", user);
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(userService.createUser(user));
     }
 
     @PutMapping
     public ResponseEntity<User> updateUser(@Valid @RequestBody User user) {
-        if (!isUserValid(user)) {
-            log.warn("Ошибка валидации пользователя {}", user);
-            throw new ValidationException("Ошибка валидации пользователя.");
-        }
-        if (!users.containsKey(user.getId())) {
-            log.warn("Отсутствует запись о пользователе {}", user);
-            throw new ValidationException("Пользователь с айди " + user.getId() + " отсутствует");
-        }
-
-        users.put(user.getId(), user);
-        log.info("Обновлен пользователь {}", user);
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(userService.updateUser(user));
     }
 
-    protected boolean isUserValid(User user) {
-        if (StringUtils.isBlank(user.getLogin()) || user.getLogin().contains(" ")) return false;
-        if (StringUtils.isBlank(user.getEmail()) || !user.getEmail().contains("@")) return false;
-        return !user.getBirthday().isAfter(LocalDate.now());
+    @PutMapping("/{userId}/friends/{friendId}")
+    public ResponseEntity<User> addFriend(@PathVariable int userId, @PathVariable int friendId) {
+        return ResponseEntity.ok(userService.addFriend(userId, friendId));
+    }
+
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public ResponseEntity<User> deleteFriend(@PathVariable int id, @PathVariable int friendId) {
+        return ResponseEntity.ok(userService.deleteFriend(id, friendId));
+    }
+
+    @GetMapping("/{id}/friends")
+    public ResponseEntity<List<User>> getUserFriends(@PathVariable int id) {
+        return ResponseEntity.ok(userService.getUserFriends(id));
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public ResponseEntity<List<User>> getUserCommonFriends(@PathVariable int id, @PathVariable int otherId) {
+        return ResponseEntity.ok(userService.getUserCommonFriends(id, otherId));
     }
 }
